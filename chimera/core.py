@@ -21,7 +21,7 @@ class Frame(BaseModel):
     - "视觉背景"是一段视觉场景的描述，对应背景中的角色可以是零个或多个，需要将对应的环境场景使用文字输出,角色对话或独白时的人物描写'''
     type: Literal["对话", "内心", "视觉背景"]
     character_names: Optional[List[str]] = Field(default_factory=list)
-    content: str = Field(description="对话内容、内心独白内容、场景描述内容或剧情说明内容，需与原文保持完全一致。")
+    content: str = Field(description="对话、内心独白、视觉背景，需与原文保持完全一致。")
 
 
 class Scene(BaseModel):
