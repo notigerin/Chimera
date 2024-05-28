@@ -13,26 +13,34 @@ class Character(BaseModel):
     value_and_beliefs: Optional[str] = Field(default=None, description="Values, beliefs and more principles. If not mentioned, then None.", example="Non-religious, longing for freedom")
     summary: Optional[str] = Field(default=None, description="character introduction less than 3 sentences, concise but distinctive")
 
-class Dialogue(BaseModel):
-    '''对话(Dialogue)是帧(Frame)中的一个信息，可以是某些角色之间的"对话"或"内心独白"
-    - "对话"指角色与其他角色对话，对应角色有且只有一个
-    - "内心独白"指角色内心活动，对应的角色有且只有一个'''
-    type: Literal["对话", "内心"]
-    character_names: Optional[List[str]] = Field(default_factory=list)
-    content: str = Field(description="对话内容、内心独白内容，需与原文保持完全一致。")
 
-class Frame(BaseModel):
-    '''帧(Frame)是场景(Scene)中的一个片段，必须包含"视觉背景"，可能包含某些多个"对话"或"内心独白"
-    - "视觉背景"是一段视觉场景的描述，对应背景中的角色可以是零个或多个，需要将对应的环境场景使用文字输出,角色对话或独白时的人物描写'''
-    type: Literal["视觉背景"]
+class DialogueFrame(BaseModel):
+    '''对话帧(DialogueFrame)是一位角色的发言，包含角色发言内容和发言过程中的肢体语言及行为。'''
+    type: Literal["dialogue"]
+    character_name: str = Field(default_factory=list)
+    content: str = Field(description="角色发言，需与原文保持完全一致")
+    action: Optional[str] = Field(description="角色发言过程中的肢体语言或行为，需与原文保持完全一致")
+
+
+class DescriptionFrame(BaseModel):
+    '''描述帧(DescriptionFrame)是一段人物动作描写、剧情解释说明、独白，可以不包含任何角色，也可以包含一个或多个角色'''
+    type: Literal["description"]
     character_names: Optional[List[str]] = Field(default_factory=list)
-    content: str = Field(description="当前场景下的视觉背景，需与原文保持完全一致。")
-    dialogues:List[Dialogue]
-      
-    
+    content: str = Field(description="小说原文")
+
+
+class InnerThoughtFrame(BaseModel):
+    '''内心活动帧(InnerThoughtFrame)是一位角色的内心想法或活动'''
+    type: Literal["dialogue"]
+    character_name: str = Field(default_factory=list)
+    content: str = Field(description="角色内心活动或想法，需与原文保持完全一致")
+
+
 class Scene(BaseModel):
-    '''场景(Scene)指故事中发生一段连续剧情，一般场景中的一些要素是连续的，例如地点、时间或人物。场景可能是多个frame组成的，每一帧(frame)是一小段情节的描述，例如一支军队的行军过程，每一帧(frame)是对行军过程中的一个场景剧情的说明'''
-    frames:List[Frame]
+    '''场景(Scene)指故事中发生一段连续剧情，一般场景中的一些要素是连续的，例如地点、时间或人物。场景中会发生角色对话（DialogueFrame），角色内心活动（InnerThoughtFrame）或剧情描写（DescriptionFrame）。'''
+    frames: List[Union[DescriptionFrame, DialogueFrame, InnerThoughtFrame]]
+    environment: str = Field(description="场景视觉环境描写，尽可能保持与原文一致")
+
 
 class KeyObject(BaseModel):
     '''小说中被反复提及的关键对象，可能是物品、环境场景或其他'''
