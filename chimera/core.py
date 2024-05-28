@@ -15,7 +15,7 @@ class Character(BaseModel):
 
 
 class DialogueFrame(BaseModel):
-    '''对话帧(DialogueFrame)是一位角色的发言，包含角色发言内容和发言过程中的肢体语言及行为。'''
+    '''对话帧(DialogueFrame)是一位角色的发言，包含角色发言内容、发言过程中的行为和该角色在该句发言之后的进一步描写。'''
     type: Literal["dialogue"]
     character_name: str = Field(default_factory=list)
     content: str = Field(description="角色发言，需与原文保持完全一致")
